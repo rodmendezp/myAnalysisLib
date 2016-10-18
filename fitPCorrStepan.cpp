@@ -159,15 +159,24 @@ Bool_t FitMCorrStepan::isInitElec()
     Bool_t result;
     result = fId->Status(0) > 0 && fId->Status(0) < 100 && fId->Charge(0) == -1 && fId->StatCC(0) > 0 && fId->StatSC(0) > 0;
     result = result && fId->StatDC(0) > 0 && fId->StatEC(0) > 0 && fId->DCStatus(0) > 0 && fId->SCStatus(0) == 33 && fId->Nphe(0) > 25;
-    result = result && (t->Etot(0) / 0.27 / 1.15 + 0.4) > fId->Momentum(0) && (t->Etot(0) / 0.27 / 1.15 - 0.2 < fId->Momentum(0));
-    result = result && (t->Ein(0) + fId->Eout(0) > 0.8 * 0.27 * fId->Momentum(0)) && (t->Ein(0) + fId->Eout(0) < 1.2 * 0.27 * fId->Momentum(0));
+    result = result && (fId->Etot(0) / 0.27 / 1.15 + 0.4) > fId->Momentum(0) && (fId->Etot(0) / 0.27 / 1.15 - 0.2 < fId->Momentum(0));
+    result = result && (fId->Ein(0) + fId->Eout(0) > 0.8 * 0.27 * fId->Momentum(0)) && (fId->Ein(0) + fId->Eout(0) < 1.2 * 0.27 * fId->Momentum(0));
     result = result && fId->Eout(0) != 0; // && fId->FidCheckCut() == 1;
     return result;
 }
 
 Bool_t FitMCorrStepan::isPartProton(Int_t j)
 {
-
+    Bool_t result;
+    result = j > 0 && fId->Charge(j) == 1 && fId->Status(j) > 0 && fId->Status(j) < 100 && fId->StatDC(j) > 0 && fId->DCStatus(j) > 0;
+    result = result && fId->StatSC(j) > 0; // && fId->Momentum(j) > 1.0;
+    if(fId->Momentum(j) > 1){
+        result = result && fId->TimeCorr4(0.938,j) >= -0.69 && fId->TimeCorr4(0.938,j) <= 1.38;
+    }
+    else if(fId->Momentum(j) < 1){
+        result = result && fId->TimeCorr4(0.938,j) >= -3.78 && fId->TimeCorr4(0.938,j) <= 6.75;
+    }
+    return result;
 }
 
 Float_t FitMCorrStepan::ratioF1(Float_t p, Float_t theta)
