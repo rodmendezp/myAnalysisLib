@@ -11,13 +11,7 @@ FitMCorrStepan::FitMCorrStepan(Float_t eBeam, TClasTool *ct)
 
 FitMCorrStepan::~FitMCorrStepan()
 {
-    delete hW;
-    delete hZ;
 
-    for(Int_t i = 0; i < nSect; i++){
-        delete hF1[i];
-        delete hF2[i];
-    }
 }
 
 void FitMCorrStepan::fillHists(TString rootfName)
@@ -95,7 +89,30 @@ void FitMCorrStepan::fillHists(TString rootfName)
             }
             hGauss->Fit("gaus");
             fGauss = hGauss->GetFunction("gaus");
+            hF1Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
+            hF1Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
+            delete hGauss;
+        }
+    }
 
+    for(Int_t i = 0; i < nSect; i++){
+        for(Int_t j = 0; j < thBins; j++){
+            totBin = 0;
+            for(Int_t k = 0; k < f2Bin; k++)
+                totBin = totBin + hF2[i]->GetBinContent(i+1, j+1);
+            if(totBin == 0) continue;
+            hGauss = new TH1F("hGauss", "hGauss", f2Bins, f2Min, f2Max);
+            for(Int_t k = 0; k < f2Bins; k++){
+                binContent = hF2[i]->GetBinContent(j+1, k+1);
+                if(binContent != 0){
+                    hGauss->Fill(hF2[i]->GetXaxis()->GetBinCenter(k+1), binContent);
+                }
+            }
+            hGauss->Fit("gaus");
+            fGauss = hGauss->GetFunction("gaus");
+            hF2Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
+            hF2Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
+            delete hGauss;
         }
     }
 
@@ -105,8 +122,22 @@ void FitMCorrStepan::fillHists(TString rootfName)
     for(Int_t i = 0; i < nSect; i++){
         hF1[i]->Write();
         hF2[i]->Write();
+        hF1Mean[i]->Write();
+        hF2Mean[i]->Write();
     }
     f->Close();
+
+    delete hW;
+    delete hZ;
+
+    for(Int_t i = 0; i < nSect; i++){
+        delete hF1[i];
+        delete hF2[i];
+        delete hF1Mean[i];
+        delete hF2Mean[i];
+    }
+
+    delete f;
 }
 
 void FitMCorrStepan::fillExtraHists(TString rootfName){
@@ -132,6 +163,11 @@ Bool_t FitMCorrStepan::isInitElec()
     result = result && (t->Ein(0) + fId->Eout(0) > 0.8 * 0.27 * fId->Momentum(0)) && (t->Ein(0) + fId->Eout(0) < 1.2 * 0.27 * fId->Momentum(0));
     result = result && fId->Eout(0) != 0; // && fId->FidCheckCut() == 1;
     return result;
+}
+
+Bool_t FitMCorrStepan::isPartProton(Int_t j)
+{
+
 }
 
 Float_t FitMCorrStepan::ratioF1(Float_t p, Float_t theta)

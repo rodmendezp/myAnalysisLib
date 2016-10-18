@@ -19,7 +19,7 @@
  * It selects events with the following conditions:
  * - 0.8 <= W <= 1.05
  * - theta >= 16
- * 
+ * - One good electron and a proton
 */
 
 class FitMCorrStepan
@@ -58,8 +58,8 @@ private:
     TClasTool *fCT;
     TIdentificator *fId;
 
-    Bool_t isInitElec(TIdentificator *t);
-    Bool_t isPartProton(TIdentificator *t, Int_t j);
+    Bool_t isInitElec();
+    Bool_t isPartProton(Int_t j);
     Float_t ratioF1(Float_t p, Float_t theta);
     Float_t pCalc(Float_t theta);
 }
