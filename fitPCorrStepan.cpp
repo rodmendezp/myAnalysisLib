@@ -4,6 +4,25 @@ using namespace std;
 
 FitPCorrStepan::FitPCorrStepan(Float_t eBeam, TClasTool *ct)
 {
+    kMassP = 0.938;
+    thetaMin[0] = 0;
+    thetaMin[1] = 16;
+    thetaMin[2] = 20;
+    thetaMin[3] = 25;
+    thetaMax[0] = 16;
+    thetaMax[1] = 20;
+    thetaMax[2] = 25;
+    thetaMax[3] = 90;
+    thMin = 15;
+    thMax = 35;
+    phiMin[0] = -30;
+    phiMax[0] = 30;
+    for(Int_t i = 1; i < 6; i++){
+        phiMin[i] = phiMin[i] + 60;
+        phiMax[i] = phiMax[i] + 60;
+    }
+    nSect = 6;
+
     this->fCT = ct;
     this->eBeam = eBeam;
     this->nEntries = (Int_t) fCT->GetEntries();

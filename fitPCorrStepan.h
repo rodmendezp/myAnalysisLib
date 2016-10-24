@@ -36,19 +36,19 @@ public:
     void printPlots();
 private:
 	Float_t eBeam;
-	Float_t kMassP = 0.938;
+    Float_t kMassP;
     Float_t f1Params[6][3];
     Float_t f2Params[6][4];
 	
     Int_t nEntries;
     Int_t nRowsEVNT;
-    Int_t nSect = 6;
-	Int_t thetaMin[4] = {0, 16, 20, 25};
-	Int_t thetaMax[4] = {16, 20, 25, 90};
-	Int_t phiMin[6] = {-30, 30, 90, 150, 210, 270};
-	Int_t phiMax[6] = {30, 90, 150, 210, 270, 330};
-    Float_t thMin = 15;
-    Float_t thMax = 35;
+    Int_t nSect;
+    Int_t thetaMin[4];
+    Int_t thetaMax[4];
+    Int_t phiMin[6];
+    Int_t phiMax[6];
+    Float_t thMin;
+    Float_t thMax;
 
     TString rootfName;
 	

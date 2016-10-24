@@ -12,7 +12,7 @@ ROOTLIBS    := $(shell $(ROOTCONFIG) --libs)
 ROOTINCDIR  := $(shell $(ROOTCONFIG) --incdir)
 
 CXX       := g++
-CXXFLAGS  += -std=c++11 -O2 -Wall -fPIC $(ROOTCFLAGS)
+CXXFLAGS  += -O2 -Wall -fPIC $(ROOTCFLAGS)
 LD        = g++
 LDFLAGS   = -O2 $(ROOTLDFLAGS)
 
