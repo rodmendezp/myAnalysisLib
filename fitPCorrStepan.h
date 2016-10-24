@@ -1,13 +1,16 @@
-#ifndef FITMCORRSTEPAN_H
-#define FITMCORRSTEPAN_H
+#ifndef FITPCORRSTEPAN_H
+#define FITPCORRSTEPAN_H
 
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #include "TString.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TF1.h"
+#include "TCanvas.h"
 #include "TDirectory.h"
 #include "TClasTool.h"
 #include "TEVNTClass.h"
@@ -22,18 +25,20 @@
  * - One good electron and a proton
 */
 
-class FitMCorrStepan
+class FitPCorrStepan
 {
 public:
-    FitMCorrStepan(Float_t eBeam, TClasTool *ct);
-    ~FitMCorrStepan();
-	void fillHists(TIdentificator *t);
-    void fillExtraHists(TIdentificator *t);
+    FitPCorrStepan(Float_t eBeam, TClasTool *ct);
+    ~FitPCorrStepan();
+    void fillHists(TString rootfName);
 	void fitHists();
-	void writeParams();
+    void writeParams(TString txtfName);
+    void printPlots();
 private:
 	Float_t eBeam;
 	Float_t kMassP = 0.938;
+    Float_t f1Params[6][3];
+    Float_t f2Params[6][4];
 	
     Int_t nEntries;
     Int_t nRowsEVNT;
@@ -42,6 +47,8 @@ private:
 	Int_t thetaMax[4] = {16, 20, 25, 90};
 	Int_t phiMin[6] = {-30, 30, 90, 150, 210, 270};
 	Int_t phiMax[6] = {30, 90, 150, 210, 270, 330};
+    Float_t thMin = 15;
+    Float_t thMax = 35;
 
     TString rootfName;
 	
@@ -62,7 +69,7 @@ private:
     Bool_t isPartProton(Int_t j);
     Float_t ratioF1(Float_t p, Float_t theta);
     Float_t pCalc(Float_t theta);
-}
+};
 
-#endif // FITMCORRSTEPAN_H
+#endif // FITPCORRSTEPAN_H
 

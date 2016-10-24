@@ -16,14 +16,20 @@ CXXFLAGS  += -std=c++11 -O2 -Wall -fPIC $(ROOTCFLAGS)
 LD        = g++
 LDFLAGS   = -O2 $(ROOTLDFLAGS)
 
-INCLUDES  := -I/$(ROOTINCDIR) -I$(CLASTOOL)/include -I$(ANALYSER)/include
+INCLUDES  := -I/$(ROOTINCDIR) -I$(CLASTOOL)/include -I$(ANALYSER)/include -I/.
 LIBS      := $(ROOTLIBS) -L$(CLASTOOL)/slib/Linux -lClasTool -L$(ANALYSER)/slib -lTIdentificator
 
-##############################################################################
-all: myROOTLib.so
+SOURCES := $(shell echo *.cpp)
+OBJECTS := $(SOURCES:.cpp=.o)
 
-myROOTLib.so: myROOTLib.cpp
-        $(CXX) $(CXXFLAGS) $(INCLUDES) -shared $< -o $@
+##############################################################################
+all: fitPCorrStepan.o libmyROOTLib.so
+
+fitPCorrStepan.o: fitPCorrStepan.cpp
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+libmyROOTLib.so: fitPCorrStepan.o
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -shared $< -o $@
 
 clean:
-        @rm -rf myROOTLib.so
+		@rm -rf fitPCorrStepan.o libmyROOTLib.so

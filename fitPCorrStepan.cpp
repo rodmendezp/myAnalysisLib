@@ -1,6 +1,8 @@
 #include "fitPCorrStepan.h"
 
-FitMCorrStepan::FitMCorrStepan(Float_t eBeam, TClasTool *ct)
+using namespace std;
+
+FitPCorrStepan::FitPCorrStepan(Float_t eBeam, TClasTool *ct)
 {
     this->fCT = ct;
     this->eBeam = eBeam;
@@ -9,12 +11,13 @@ FitMCorrStepan::FitMCorrStepan(Float_t eBeam, TClasTool *ct)
     fId = new TIdentificator(fCT);
 }
 
-FitMCorrStepan::~FitMCorrStepan()
+FitPCorrStepan::~FitPCorrStepan()
 {
-
+    delete fCT;
+    delete fId;
 }
 
-void FitMCorrStepan::fillHists(TString rootfName)
+void FitPCorrStepan::fillHists(TString rootfName)
 {
     this->rootfName = rootfName;
     TFile *f = new TFile(rootfName, "RECREATE");
@@ -30,8 +33,6 @@ void FitMCorrStepan::fillHists(TString rootfName)
     Float_t f1Max = 1.1;
     Float_t f2Min = 0.9;
     Float_t f2Max = 1.1;
-    Float_t thMin = 15;
-    Float_t thMax = 35;
 
     hW = new TH1F("hW", "W no DIS", 50, 0.7, 1.2);
     hZ = new TH1F("hZ", "Z Coordinate", 100, -80, 20);
@@ -47,19 +48,23 @@ void FitMCorrStepan::fillHists(TString rootfName)
         hF1[i] = new TH2F(Form("hF1_phi%d", i+1), sHF1Title, phiBins, phiMin[i], phiMax[i], f1Bins, f1Min, f1Max);
         hF2[i] = new TH2F(Form("hF2_phi%d", i+1), sHF2Title, thBins, thMin, thMax, f2Bins, f2Min, f2Max);
         hF1Mean[i] = new TH1F(Form("hF1_phi%d_m", i+1), sHF1MeanTitle, phiBins, phiMin[i], phiMax[i]);
-        hF2Mean[i] = new TH1F(Form("hF2_phi%d_m", i+1), sHF2MeanTitle, phiBins, phiMin[i], phiMax[i]);
+        hF2Mean[i] = new TH1F(Form("hF2_phi%d_m", i+1), sHF2MeanTitle, thBins, thMin, thMax);
     }
+
+    cout << "Number of Events: " << nEntries << endl;
 
     for(Int_t i = 0; i < nEntries; i++){
         fCT->Next();
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
-        if(nRowsEVNT > 1 && isInitElec(t) && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16){
+        if(nRowsEVNT > 1 && isInitElec() && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16){
             for(Int_t j = 0; j < nRowsEVNT; j++){
-                if(hasProton = isPartProton(fId, j)) break;
+                hasProton = isPartProton(j);
+                if(hasProton) break;
             }
         }
         if(hasProton){
+            fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
             hZ->Fill(fEVNT->GetZ());
             hW->Fill(fId->W());
             Int_t sec = fId->Sector(0);
@@ -79,15 +84,15 @@ void FitMCorrStepan::fillHists(TString rootfName)
             totBin = 0;
             for(Int_t k = 0; k < f1Bins; k++)
                 totBin = totBin + hF1[i]->GetBinContent(j+1, k+1);
-            if(totBin = 0) continue;
+            if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f1Bins, f1Min, f1Max);
             for(Int_t k = 0; k < f1Bins; k++){
                 binContent = hF1[i]->GetBinContent(j+1, k+1);
                 if(binContent != 0){
-                    hGauss->Fill(hF1[i]->GetXaxis()->GetBinCenter(k+1), binContent);
+                    hGauss->Fill(hF1[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            hGauss->Fit("gaus");
+            hGauss->Fit("gaus", "q");
             fGauss = hGauss->GetFunction("gaus");
             hF1Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
             hF1Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
@@ -98,17 +103,17 @@ void FitMCorrStepan::fillHists(TString rootfName)
     for(Int_t i = 0; i < nSect; i++){
         for(Int_t j = 0; j < thBins; j++){
             totBin = 0;
-            for(Int_t k = 0; k < f2Bin; k++)
-                totBin = totBin + hF2[i]->GetBinContent(i+1, j+1);
+            for(Int_t k = 0; k < f2Bins; k++)
+                totBin = totBin + hF2[i]->GetBinContent(j+1, k+1);
             if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f2Bins, f2Min, f2Max);
             for(Int_t k = 0; k < f2Bins; k++){
                 binContent = hF2[i]->GetBinContent(j+1, k+1);
                 if(binContent != 0){
-                    hGauss->Fill(hF2[i]->GetXaxis()->GetBinCenter(k+1), binContent);
+                    hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            hGauss->Fit("gaus");
+            hGauss->Fit("gaus", "q");
             fGauss = hGauss->GetFunction("gaus");
             hF2Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
             hF2Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
@@ -125,70 +130,160 @@ void FitMCorrStepan::fillHists(TString rootfName)
         hF1Mean[i]->Write();
         hF2Mean[i]->Write();
     }
-    f->Close();
 
-    delete hW;
-    delete hZ;
-
+    hW->Delete();
+    hZ->Delete();
     for(Int_t i = 0; i < nSect; i++){
-        delete hF1[i];
-        delete hF2[i];
-        delete hF1Mean[i];
-        delete hF2Mean[i];
+        hF1[i]->Delete();
+        hF2[i]->Delete();
+        hF1Mean[i]->Delete();
+        hF2Mean[i]->Delete();
     }
-
+    f->Close();
     delete f;
 }
 
-void FitMCorrStepan::fillExtraHists(TString rootfName){
-
-}
-
-void FitMCorrStepan::fitHists()
+void FitPCorrStepan::fitHists()
 {
+    TFile *f = new TFile(rootfName, "UPDATE");
 
+    TH1F *hF1r;
+    TH1F *hF2r;
+    TF1 *f1[nSect];
+    TF1 *f2[nSect];
+
+    for(Int_t i = 0; i < nSect; i++){
+        f1[i] = new TF1(Form("f1_phi%d", i+1), "[0]+[1]*x+[2]*x*x", phiMin[i], phiMax[i]);
+        f2[i] = new TF1(Form("f2_phi%d", i+1), "[0]+([1]+[2]*x+[3]*x*x)*exp(x)", thMin, thMax);
+        // Set initial parameters since this fit is not trivial
+        f2[i]->SetParameter(0, 1.002);
+        f2[i]->SetParameter(1, 2.735e6);
+        f2[i]->SetParameter(2, -2.885e5);
+        f2[i]->SetParameter(3, 7190);
+    }
+
+    for(Int_t i = 0; i < nSect; i++){
+        hF1r = (TH1F*) f->Get(Form("hF1_phi%d_m", i+1));
+        hF2r = (TH1F*) f->Get(Form("hF2_phi%d_m", i+1));
+        hF1r->Fit(Form("f1_phi%d", i+1), "q");
+        f->cd();
+        hF1r->Write(Form("%s_FIT", hF1r->GetName()));
+        f1Params[i][0] = f1[i]->GetParameter(0);
+        f1Params[i][1] = f1[i]->GetParameter(1);
+        f1Params[i][2] = f1[i]->GetParameter(2);
+        hF2r->Fit(Form("f2_phi%d", i+1), "q");
+        f->cd();
+        hF2r->Write(Form("%s_FIT", hF2r->GetName()));
+        f2Params[i][0] = f2[i]->GetParameter(0);
+        f2Params[i][1] = f2[i]->GetParameter(1);
+        f2Params[i][2] = f2[i]->GetParameter(2);
+        f2Params[i][3] = f2[i]->GetParameter(3);
+    }
+
+    for(Int_t i = 0; i < nSect; i++){
+        f1[i]->Delete();
+        f2[i]->Delete();
+    }
+    hF1r->Delete();
+    hF2r->Delete();
+
+    f->Close();
+    delete f;
+
+    return;
 }
 
-void FitMCorrStepan::writeParams()
+void FitPCorrStepan::writeParams(TString txtfName)
 {
-
+    ofstream txtFile;
+    txtFile.open(txtfName);
+    for(Int_t i = 0; i < nSect; i++){
+        txtFile << "F1 Sector " << i+1 << " ";
+        txtFile << f1Params[i][0] << "\t";
+        txtFile << f1Params[i][1] << "\t";
+        txtFile << f1Params[i][2] << "\t";
+        txtFile << endl;
+        txtFile << "F2 Sector " << i+1 << " ";
+        txtFile << f2Params[i][0] << "\t";
+        txtFile << f2Params[i][1] << "\t";
+        txtFile << f2Params[i][2] << "\t";
+        txtFile << f2Params[i][3] << "\t";
+        txtFile << endl;
+    }
+    txtFile.close();
 }
 
-Bool_t FitMCorrStepan::isInitElec()
+void FitPCorrStepan::printPlots()
+{
+    TFile *f = new TFile(rootfName, "READ");
+
+    TH1F *hW = (TH1F*) f->Get("hW");
+    TH1F *hZ = (TH1F*) f->Get("hZ");
+
+    TCanvas *c1 = new TCanvas("c1", "", 1024, 800);
+    hW->Draw();
+    c1->SaveAs("invMass.png");
+
+    hZ->Draw();
+    c1->SaveAs("zCoordinate.png");
+
+    TH1F *hF1;
+    TH1F *hF2;
+
+    for(Int_t i = 0; i < nSect; i++){
+        hF1 = (TH1F*) f->Get(Form("hF1_phi%d_m_FIT", i+1));
+        hF1->Draw();
+        hF1->GetYaxis()->SetRangeUser(0.95, 1.05);
+        c1->SaveAs(Form("fitF1_phi%d.png", i));
+        hF2 = (TH1F*) f->Get(Form("hF2_phi%d_m_FIT", i+1));
+        hF2->Draw();
+        hF2->GetYaxis()->SetRangeUser(0.95, 1.05);
+        c1->SaveAs(Form("fitF2_phi%d.png", i));
+    }
+
+    hF1->Delete();
+    hF2->Delete();
+
+    delete c1;
+    f->Close();
+    delete f;
+}
+
+Bool_t FitPCorrStepan::isInitElec()
 {
     Bool_t result;
     result = fId->Status(0) > 0 && fId->Status(0) < 100 && fId->Charge(0) == -1 && fId->StatCC(0) > 0 && fId->StatSC(0) > 0;
     result = result && fId->StatDC(0) > 0 && fId->StatEC(0) > 0 && fId->DCStatus(0) > 0 && fId->SCStatus(0) == 33 && fId->Nphe(0) > 25;
     result = result && (fId->Etot(0) / 0.27 / 1.15 + 0.4) > fId->Momentum(0) && (fId->Etot(0) / 0.27 / 1.15 - 0.2 < fId->Momentum(0));
     result = result && (fId->Ein(0) + fId->Eout(0) > 0.8 * 0.27 * fId->Momentum(0)) && (fId->Ein(0) + fId->Eout(0) < 1.2 * 0.27 * fId->Momentum(0));
-    result = result && fId->Eout(0) != 0; // && fId->FidCheckCut() == 1;
+    result = result && fId->Eout(0) != 0 && fId->FidCheckCut() == 1;
     return result;
 }
 
-Bool_t FitMCorrStepan::isPartProton(Int_t j)
+Bool_t FitPCorrStepan::isPartProton(Int_t j)
 {
     Bool_t result;
     result = j > 0 && fId->Charge(j) == 1 && fId->Status(j) > 0 && fId->Status(j) < 100 && fId->StatDC(j) > 0 && fId->DCStatus(j) > 0;
-    result = result && fId->StatSC(j) > 0; // && fId->Momentum(j) > 1.0;
+    result = result && fId->StatSC(j) > 0;
     if(fId->Momentum(j) > 1){
-        result = result && fId->TimeCorr4(0.938,j) >= -0.69 && fId->TimeCorr4(0.938,j) <= 1.38;
+        result = result && fId->TimeCorr4(kMassP,j) >= -0.69 && fId->TimeCorr4(kMassP,j) <= 1.38;
     }
     else if(fId->Momentum(j) < 1){
-        result = result && fId->TimeCorr4(0.938,j) >= -3.78 && fId->TimeCorr4(0.938,j) <= 6.75;
+        result = result && fId->TimeCorr4(kMassP,j) >= -3.78 && fId->TimeCorr4(kMassP,j) <= 6.75;
     }
     return result;
 }
 
-Float_t FitMCorrStepan::ratioF1(Float_t p, Float_t theta)
+Float_t FitPCorrStepan::ratioF1(Float_t p, Float_t theta)
 {
     Float_t ratio;
     ratio = pCalc(theta)/p;
     return ratio;
 }
 
-Float_t FitMCorrStepan::pCalc(Float_t theta){
+Float_t FitPCorrStepan::pCalc(Float_t theta){
     Float_t p;
     theta = TMath::Pi()*theta/180;
-    p = eBeam/(1 + E_beam * (1 - TMath::Cos(theta))/kMassP);
+    p = eBeam/(1 + eBeam * (1 - TMath::Cos(theta))/kMassP);
     return p;
 }
