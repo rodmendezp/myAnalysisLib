@@ -18,8 +18,8 @@ FitPCorrStepan::FitPCorrStepan(Float_t eBeam, TClasTool *ct)
     phiMin[0] = -30;
     phiMax[0] = 30;
     for(Int_t i = 1; i < 6; i++){
-        phiMin[i] = phiMin[i] + 60;
-        phiMax[i] = phiMax[i] + 60;
+        phiMin[i] = phiMin[i-1] + 60;
+        phiMax[i] = phiMax[i-1] + 60;
     }
     nSect = 6;
 
