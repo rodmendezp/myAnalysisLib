@@ -19,17 +19,23 @@ LDFLAGS   = -O2 $(ROOTLDFLAGS)
 INCLUDES  := -I/$(ROOTINCDIR) -I$(CLASTOOL)/include -I$(ANALYSER)/include -I/.
 LIBS      := $(ROOTLIBS) -L$(CLASTOOL)/slib/Linux -lClasTool -L$(ANALYSER)/slib -lTIdentificator
 
-SOURCES := $(shell echo *.cpp)
+SOURCES := myROOTUtils.cpp fitPCorrStepan.cpp pCorrStepan.cpp
 OBJECTS := $(SOURCES:.cpp=.o)
 
 ##############################################################################
-all: fitPCorrStepan.o libmyROOTLib.so
+all: libmyROOTLib.so
+
+myROOTUtils.o: myROOTUtils.cpp
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@	
 
 fitPCorrStepan.o: fitPCorrStepan.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+		
+pCorrStepan.o: pCorrStepan.cpp
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-libmyROOTLib.so: fitPCorrStepan.o
-		$(CXX) $(CXXFLAGS) $(INCLUDES) -shared $< -o $@
+libmyROOTLib.so: $(OBJECTS)
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -shared -o $@ $^
 
 clean:
-		@rm -rf fitPCorrStepan.o libmyROOTLib.so
+		@rm -rf pCorrStepan.o fitPCorrStepan.o myROOTUtils.o libmyROOTLib.so
