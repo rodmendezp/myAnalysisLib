@@ -117,7 +117,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
                     hGauss->Fill(hF1[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            if(entriesGaus < 100) continue;
+            if(entriesGaus < 50) continue;
             hGauss->Fit("gaus", "EQ");
             if(printGFit){
                 c1->cd();
@@ -146,7 +146,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
                     hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            if(entriesGaus < 100) continue;
+            if(entriesGaus < 20) continue;
             hGauss->Fit("gaus", "EQ");
             if(printGFit){
                 c1->cd();
