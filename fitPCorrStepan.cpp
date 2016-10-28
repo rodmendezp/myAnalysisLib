@@ -37,7 +37,7 @@ FitPCorrStepan::~FitPCorrStepan()
     delete fId;
 }
 
-void FitPCorrStepan::fillHists(TString rootfName)
+void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
 {
     this->rootfName = rootfName;
     TFile *f = new TFile(rootfName, "RECREATE");
@@ -77,14 +77,14 @@ void FitPCorrStepan::fillHists(TString rootfName)
         fCT->Next();
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
-        if(nRowsEVNT > 1 && isInitElec() && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16){
+        fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
+        if(nRowsEVNT > 1 && isInitElec() && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16 && fEVNT->GetZ() < -10){
             for(Int_t j = 0; j < nRowsEVNT; j++){
                 hasProton = isPartProton(j);
                 if(hasProton) break;
             }
         }
         if(hasProton){
-            fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
             hZ->Fill(fEVNT->GetZ());
             hW->Fill(fId->W());
             Int_t sec = fId->Sector(0);
@@ -99,6 +99,8 @@ void FitPCorrStepan::fillHists(TString rootfName)
     TH1F *hGauss;
     TF1 *fGauss;
 
+    TCanvas *c1 = new TCanvas("c1", "", 1024, 800);
+
     for(Int_t i = 0; i < nSect; i++){
         for(Int_t j = 0; j < phiBins; j++){
             totBin = 0;
@@ -112,7 +114,12 @@ void FitPCorrStepan::fillHists(TString rootfName)
                     hGauss->Fill(hF1[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            hGauss->Fit("gaus", "q");
+            hGauss->Fit("gaus", "EQ");
+            if(printGFit){
+                c1->cd();
+                hGauss->Draw();
+                c1->SaveAs(Form("fitGaussf2_sec%d_bin%d.png", i+1, j+1));
+            }
             fGauss = hGauss->GetFunction("gaus");
             hF1Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
             hF1Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
@@ -133,7 +140,12 @@ void FitPCorrStepan::fillHists(TString rootfName)
                     hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            hGauss->Fit("gaus", "q");
+            hGauss->Fit("gaus", "EQ");
+            if(printGFit){
+                c1->cd();
+                hGauss->Draw();
+                c1->SaveAs(Form("fitGaussf1_sec%d_bin%d.png", i+1, j+1));
+            }
             fGauss = hGauss->GetFunction("gaus");
             hF2Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
             hF2Mean[i]->SetBinError(j+1, fGauss->GetParError(1));
@@ -160,6 +172,8 @@ void FitPCorrStepan::fillHists(TString rootfName)
         hF2Mean[i]->Delete();
     }
     f->Close();
+
+    delete c1;
     delete f;
 }
 
@@ -197,13 +211,13 @@ void FitPCorrStepan::fitHists(Bool_t setInitParams = false)
     for(Int_t i = 0; i < nSect; i++){
         hF1r = (TH1F*) f->Get(Form("hF1_phi%d_m", i+1));
         hF2r = (TH1F*) f->Get(Form("hF2_phi%d_m", i+1));
-        hF1r->Fit(Form("f1_phi%d", i+1), "q");
+        hF1r->Fit(Form("f1_phi%d", i+1), "EQ");
         f->cd();
         hF1r->Write(Form("%s_FIT", hF1r->GetName()));
         f1Params[i][0] = f1[i]->GetParameter(0);
         f1Params[i][1] = f1[i]->GetParameter(1);
         f1Params[i][2] = f1[i]->GetParameter(2);
-        hF2r->Fit(Form("f2_phi%d", i+1), "q");
+        hF2r->Fit(Form("f2_phi%d", i+1), "EQ");
         f->cd();
         hF2r->Write(Form("%s_FIT", hF2r->GetName()));
         f2Params[i][0] = f2[i]->GetParameter(0);

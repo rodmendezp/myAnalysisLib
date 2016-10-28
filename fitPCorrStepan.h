@@ -30,7 +30,7 @@ class FitPCorrStepan
 public:
     FitPCorrStepan(Float_t eBeam, TClasTool *ct);
     ~FitPCorrStepan();
-    void fillHists(TString rootfName);
+    void fillHists(TString rootfName, Bool_t printGFit);
     void fitHists(Bool_t setInitParams);
     void writeParams(TString txtfName);
     void printPlots();
