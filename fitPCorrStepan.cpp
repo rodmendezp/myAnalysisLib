@@ -95,6 +95,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
 
     Int_t binContent;
     Int_t totBin;
+    Int_t entriesGaus;
 
     TH1F *hGauss;
     TF1 *fGauss;
@@ -104,16 +105,19 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
     for(Int_t i = 0; i < nSect; i++){
         for(Int_t j = 0; j < phiBins; j++){
             totBin = 0;
+            entriesGaus = 0;
             for(Int_t k = 0; k < f1Bins; k++)
                 totBin = totBin + hF1[i]->GetBinContent(j+1, k+1);
             if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f1Bins, f1Min, f1Max);
             for(Int_t k = 0; k < f1Bins; k++){
                 binContent = hF1[i]->GetBinContent(j+1, k+1);
+                entriesGaus = entriesGaus + binContent;
                 if(binContent != 0){
                     hGauss->Fill(hF1[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
+            if(entriesGaus < 100) continue;
             hGauss->Fit("gaus", "EQ");
             if(printGFit){
                 c1->cd();
@@ -130,16 +134,19 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
     for(Int_t i = 0; i < nSect; i++){
         for(Int_t j = 0; j < thBins; j++){
             totBin = 0;
+            entriesGaus = 0;
             for(Int_t k = 0; k < f2Bins; k++)
                 totBin = totBin + hF2[i]->GetBinContent(j+1, k+1);
             if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f2Bins, f2Min, f2Max);
             for(Int_t k = 0; k < f2Bins; k++){
                 binContent = hF2[i]->GetBinContent(j+1, k+1);
+                entriesGaus = entriesGaus + binContent;
                 if(binContent != 0){
                     hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
+            if(entriesGaus < 100) continue;
             hGauss->Fit("gaus", "EQ");
             if(printGFit){
                 c1->cd();
