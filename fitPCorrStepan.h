@@ -31,7 +31,7 @@ public:
     FitPCorrStepan(Float_t eBeam, TClasTool *ct);
     ~FitPCorrStepan();
     void fillHists(TString rootfName);
-	void fitHists();
+    void fitHists(Bool_t setInitParams);
     void writeParams(TString txtfName);
     void printPlots();
 private:

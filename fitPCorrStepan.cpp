@@ -13,8 +13,8 @@ FitPCorrStepan::FitPCorrStepan(Float_t eBeam, TClasTool *ct)
     thetaMax[1] = 20;
     thetaMax[2] = 25;
     thetaMax[3] = 90;
-    thMin = 15;
-    thMax = 35;
+    thMin = 16;
+    thMax = 34;
     phiMin[0] = -30;
     phiMax[0] = 30;
     for(Int_t i = 1; i < 6; i++){
@@ -44,7 +44,7 @@ void FitPCorrStepan::fillHists(TString rootfName)
     Bool_t hasProton;
 
     Int_t phiBins = 60;
-    Int_t thBins = 20;
+    Int_t thBins = 18;
     Int_t f1Bins = 20;
     Int_t f2Bins = 20;
 
@@ -162,7 +162,7 @@ void FitPCorrStepan::fillHists(TString rootfName)
     delete f;
 }
 
-void FitPCorrStepan::fitHists()
+void FitPCorrStepan::fitHists(Bool_t setInitParams = false)
 {
     TFile *f = new TFile(rootfName, "UPDATE");
 
@@ -174,11 +174,24 @@ void FitPCorrStepan::fitHists()
     for(Int_t i = 0; i < nSect; i++){
         f1[i] = new TF1(Form("f1_phi%d", i+1), "[0]+[1]*x+[2]*x*x", phiMin[i], phiMax[i]);
         f2[i] = new TF1(Form("f2_phi%d", i+1), "[0]+([1]+[2]*x+[3]*x*x)*exp(x)", thMin, thMax);
-        // Set initial parameters since this fit is not trivial
-        f2[i]->SetParameter(0, 1.002);
-        f2[i]->SetParameter(1, 2.735e6);
-        f2[i]->SetParameter(2, -2.885e5);
-        f2[i]->SetParameter(3, 7190);
+    }
+
+    if(setInitParams & fexists("initFitParams.txt")){
+        ifstream txtFile;
+        if(fexists(txtfName)){
+            txtFile.open(txtfName.c_str());
+            for(Int_t i = 0; i < nSect; i++){
+                txtFile >> aux >> aux >> aux >> f1Params[i][0] >> f1Params[i][1] >> f1Params[i][2];
+                txtFile >> aux >> aux >> aux >> f2Params[i][0] >> f2Params[i][1] >> f2Params[i][2] >> f2Params[i][3];
+            }
+            txtFile.close();
+        }
+        for(Int_t i = 0; i < nSect; i++){
+            for(Int_t j = 0; j < 4; j++){
+                if(j != 3) f1[i]->SetParameter(j, f1Params[i][j]);
+                f2[i]->SetParameter(j, f2Params[i][j]);
+            }
+        }
     }
 
     for(Int_t i = 0; i < nSect; i++){

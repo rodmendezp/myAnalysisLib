@@ -12,7 +12,6 @@
 #include "TF1.h"
 #include "TDirectory.h"
 
-bool fexists(std::string fName);
-void foo();
+Bool_t fexists(std::string fName);
 
 #endif // MYROOTUTILS_H
