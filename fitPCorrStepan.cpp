@@ -122,7 +122,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
             if(printGFit){
                 c1->cd();
                 hGauss->Draw();
-                c1->SaveAs(Form("fitGaussf2_sec%d_bin%d.png", i+1, j+1));
+                c1->SaveAs(Form("fitGaussf1_sec%d_bin%d.png", i+1, j+1));
             }
             fGauss = hGauss->GetFunction("gaus");
             hF1Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
@@ -151,7 +151,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
             if(printGFit){
                 c1->cd();
                 hGauss->Draw();
-                c1->SaveAs(Form("fitGaussf1_sec%d_bin%d.png", i+1, j+1));
+                c1->SaveAs(Form("fitGaussf2_sec%d_bin%d.png", i+1, j+1));
             }
             fGauss = hGauss->GetFunction("gaus");
             hF2Mean[i]->SetBinContent(j+1, fGauss->GetParameter(1));
