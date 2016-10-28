@@ -146,7 +146,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
                     hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            if(entriesGaus < 20) continue;
+            if(entriesGaus < 25) continue;
             hGauss->Fit("gaus", "EQ");
             if(printGFit){
                 c1->cd();
@@ -195,7 +195,7 @@ void FitPCorrStepan::fitHists(Bool_t setInitParams = false)
 
     for(Int_t i = 0; i < nSect; i++){
         f1[i] = new TF1(Form("f1_phi%d", i+1), "[0]+[1]*x+[2]*x*x", phiMin[i], phiMax[i]);
-        f2[i] = new TF1(Form("f2_phi%d", i+1), "[0]+([1]+[2]*x+[3]*x*x)*exp(x)", thMin, thMax);
+        f2[i] = new TF1(Form("f2_phi%d", i+1), "[0]+([1]+[2]*x+[3]*x*x)*exp(x)", thMin, 32);
     }
 
     if(setInitParams & fexists("initFitParams.txt")){
