@@ -1,4 +1,5 @@
 #include "fitPCorrStepan.h"
+#include "myROOTUtils.h"
 
 using namespace std;
 
@@ -178,14 +179,13 @@ void FitPCorrStepan::fitHists(Bool_t setInitParams = false)
 
     if(setInitParams & fexists("initFitParams.txt")){
         ifstream txtFile;
-        if(fexists(txtfName)){
-            txtFile.open(txtfName.c_str());
-            for(Int_t i = 0; i < nSect; i++){
-                txtFile >> aux >> aux >> aux >> f1Params[i][0] >> f1Params[i][1] >> f1Params[i][2];
-                txtFile >> aux >> aux >> aux >> f2Params[i][0] >> f2Params[i][1] >> f2Params[i][2] >> f2Params[i][3];
-            }
-            txtFile.close();
+        TString aux;
+        txtFile.open("initFitParams.txt");
+        for(Int_t i = 0; i < nSect; i++){
+            txtFile >> aux >> aux >> aux >> f1Params[i][0] >> f1Params[i][1] >> f1Params[i][2];
+            txtFile >> aux >> aux >> aux >> f2Params[i][0] >> f2Params[i][1] >> f2Params[i][2] >> f2Params[i][3];
         }
+        txtFile.close();
         for(Int_t i = 0; i < nSect; i++){
             for(Int_t j = 0; j < 4; j++){
                 if(j != 3) f1[i]->SetParameter(j, f1Params[i][j]);
