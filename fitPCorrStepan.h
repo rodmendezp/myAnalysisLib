@@ -53,6 +53,7 @@ private:
     TString rootfName;
 	
 	TH1F *hW;
+    TH1F *hWextra;
 	TH1F *hZ;
     TH1F *hF1Mean[6];
     TH1F *hF2Mean[6];

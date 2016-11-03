@@ -54,7 +54,8 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
     Float_t f2Min = 0.9;
     Float_t f2Max = 1.1;
 
-    hW = new TH1F("hW", "W no DIS", 50, 0.7, 1.2);
+    hW = new TH1F("hW", "W no DIS", 100, 0.7, 1.2);
+    hWextra = new TH1F("hWextra", "W no DIS", 100, 0.7, 1.2);
     hZ = new TH1F("hZ", "Z Coordinate", 100, -80, 20);
 
     TString sHF1Title;
@@ -77,6 +78,9 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
         fCT->Next();
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
+        if(nRowsEVNT > 1 && isInitElec() && fId->ThetaLab(0) >= 16){
+            hWextra->Fill(fId->W());
+        }
         if(nRowsEVNT > 1 && isInitElec() && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16){
             fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
             for(Int_t j = 0; j < nRowsEVNT; j++){
@@ -163,6 +167,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
     f->cd();
     hW->Write();
     hZ->Write();
+    hWextra->Write();
     for(Int_t i = 0; i < nSect; i++){
         hF1[i]->Write();
         hF2[i]->Write();
@@ -171,6 +176,7 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
     }
 
     hW->Delete();
+    hWextra->Delete();
     hZ->Delete();
     for(Int_t i = 0; i < nSect; i++){
         hF1[i]->Delete();
@@ -218,13 +224,13 @@ void FitPCorrStepan::fitHists(Bool_t setInitParams = false)
     for(Int_t i = 0; i < nSect; i++){
         hF1r = (TH1F*) f->Get(Form("hF1_phi%d_m", i+1));
         hF2r = (TH1F*) f->Get(Form("hF2_phi%d_m", i+1));
-        hF1r->Fit(Form("f1_phi%d", i+1), "EQ");
+        hF1r->Fit(Form("f1_phi%d", i+1), "REQ");
         f->cd();
         hF1r->Write(Form("%s_FIT", hF1r->GetName()));
         f1Params[i][0] = f1[i]->GetParameter(0);
         f1Params[i][1] = f1[i]->GetParameter(1);
         f1Params[i][2] = f1[i]->GetParameter(2);
-        hF2r->Fit(Form("f2_phi%d", i+1), "EQ");
+        hF2r->Fit(Form("f2_phi%d", i+1), "REQ");
         f->cd();
         hF2r->Write(Form("%s_FIT", hF2r->GetName()));
         f2Params[i][0] = f2[i]->GetParameter(0);
@@ -271,11 +277,18 @@ void FitPCorrStepan::printPlots()
     TFile *f = new TFile(rootfName, "READ");
 
     TH1F *hW = (TH1F*) f->Get("hW");
+    TH1F *hWextra = (TH1F*) f->Get("hWextra");
     TH1F *hZ = (TH1F*) f->Get("hZ");
 
     TCanvas *c1 = new TCanvas("c1", "", 1024, 800);
     hW->Draw();
     c1->SaveAs("invMass.png");
+
+    hWextra->Draw();
+    hW->SetMarkerColor(kRed);
+    hW->SetLineColor(kRed);
+    hW->Draw("same");
+    c1->SaveAs("invMassExtra.png");
 
     hZ->Draw();
     c1->SaveAs("zCoordinate.png");
