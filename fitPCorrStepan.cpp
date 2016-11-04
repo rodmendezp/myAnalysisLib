@@ -78,15 +78,16 @@ void FitPCorrStepan::fillHists(TString rootfName, Bool_t printGFit = false)
         fCT->Next();
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
-        if(nRowsEVNT > 1 && isInitElec() && fId->ThetaLab(0) >= 16){
-            hWextra->Fill(fId->W());
-        }
         if(nRowsEVNT > 1 && isInitElec() && fId->W() >= 0.8 && fId->W() <= 1.05 && fId->ThetaLab(0) >= 16){
             fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
             for(Int_t j = 0; j < nRowsEVNT; j++){
                 hasProton = isPartProton(j);
                 if(hasProton) break;
             }
+        }
+        if(nRowsEVNT > 1 && isInitElec() && fId->ThetaLab(0) >= 16){
+            if(hasProton && fEVNT->GetZ() < -10)
+                hWextra->Fill(fId->W());
         }
         if(hasProton && fEVNT->GetZ() < -10){
             hZ->Fill(fEVNT->GetZ());
