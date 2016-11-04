@@ -287,13 +287,13 @@ void FitPCorrStepan::writeHists(TString txtfName)
         hF1 = (TH1F*) f->Get(Form("hF1_phi%d_m_FIT", i+1));
         txtFile << "hF1_" << i+1 << endl;
         for(Int_t j = 0; j < phiBins; j++){
-            txtFile << hF1->GetBinContent(j) << hF1->GetBinError(j) << endl;
+            txtFile << hF1->GetBinContent(j) << "\t" << hF1->GetBinError(j) << endl;
         }
         txtFile << endl;
         hF2 = (TH1F*) f->Get(Form("hF2_phi%d_m_FIT", i+1));
         txtFile << "hF2_" << i+1 << endl;
         for(Int_t j = 0; j < thBins; j++){
-            txtFile << hF1->GetBinContent(j) << hF1->GetBinError(j) << endl;
+            txtFile << hF2->GetBinContent(j) << "\t" << hF2->GetBinError(j) << endl;
         }
         txtFile << endl;
     }
