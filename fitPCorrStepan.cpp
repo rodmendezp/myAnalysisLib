@@ -273,6 +273,31 @@ void FitPCorrStepan::writeParams(TString txtfName)
     txtFile.close();
 }
 
+void FitPCorrStepan::writeHists(TString txtfName)
+{
+    TFile *f = new TFile(rootfName, "READ");
+    TH1F *hF1;
+    TH1F *hF2;
+
+    ofstream txtFile;
+    txtFile.open(txtfName);
+    for(Int_t i = 0; i < nSect; i++){
+        hF1 = (TH1F*) f->Get(Form("hF1_phi%d_m_FIT", i+1));
+        txtFile << "hF1_" << i+1 << endl;
+        for(Int j = 0; j < phiBins; j++){
+            txtFile << hF1->GetBinContent(j) << hF1->GetBinError(j) << endl;
+        }
+        txtFile << endl;
+        hF2 = (TH1F*) f->Get(Form("hF2_phi%d_m_FIT", i+1));
+        txtFile << "hF2_" << i+1 << endl;
+        for(Int j = 0; j < thBins; j++){
+            txtFile << hF1->GetBinContent(j) << hF1->GetBinError(j) << endl;
+        }
+        txtFile << endl;
+    }
+    txtFile.close();
+}
+
 void FitPCorrStepan::printPlots()
 {
     TFile *f = new TFile(rootfName, "READ");

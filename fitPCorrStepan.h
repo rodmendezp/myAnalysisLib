@@ -34,6 +34,7 @@ public:
     void fitHists(Bool_t setInitParams);
     void writeParams(TString txtfName);
     void printPlots();
+    void writeHists(TString txtfName);
 private:
 	Float_t eBeam;
     Float_t kMassP;
