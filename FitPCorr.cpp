@@ -85,8 +85,9 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
         }
     }
 
-    cout << "Percentage of event pass cuts " << hW->GetEntries()/nEntries << endl;
-
+    cout << "Percentage of event pass cuts " << 100*hW->GetEntries()/nEntries << "%" << endl;
+    cout << "Min Theta Found = " << minThetaE << endl;
+    cout << "Max Theta Found = " << maxThetaE << endl;
     Int_t binContent;
     Int_t totBin;
     Int_t entriesGaus;
