@@ -393,7 +393,7 @@ void FitPCorr::initHists(){
         hF2Mean[i] = new TH1F(Form("hF2_phi%d_m", i+1), sHF2MeanTitle, thBins, thMin, thMax);
         for(Int_t j = 0; j < 4; j++){
             sHF1eTitle = Form("F1 vs Phi (Sector %d) %f < th < %f", i, thetaMin[j], thetaMax[j]);
-            hF1Extra[i][j] = new TH2F(Form("hF1e_phi%d", i+1), sHF1eTitle, phiBins, phiMin[i], phiMax[i], thetaMax[j]-thetaMin[j], thetaMin[j], thetaMax[j]);
+            hF1Extra[i][j] = new TH2F(Form("hF1e_phi%d%d", i+1, j+1), sHF1eTitle, phiBins, phiMin[i], phiMax[i], thetaMax[j]-thetaMin[j], thetaMin[j], thetaMax[j]);
         }
     }
 }
@@ -419,6 +419,9 @@ void FitPCorr::writeHists(TFile *f)
         hF2[i]->Delete();
         hF1Mean[i]->Delete();
         hF2Mean[i]->Delete();
+        for(Int_t j = 0; j < 4; j++){
+            hF1Extra[i]->Delete();
+        }
     }
     f->Close();
     delete f;
