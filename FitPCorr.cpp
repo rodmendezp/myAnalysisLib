@@ -104,7 +104,7 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
                 totBin = totBin + hF1[i]->GetBinContent(j+1, k+1);
             if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f1Bins, f1Min, f1Max);
-            fGauss = new TF1("fGauss", "gaus(0)", 0.95, 1.05);
+            fGauss = new TF1("fGauss", "gaus", 0.95, 1.05);
             for(Int_t k = 0; k < f1Bins; k++){
                 binContent = hF1[i]->GetBinContent(j+1, k+1);
                 entriesGaus = entriesGaus + binContent;
@@ -138,7 +138,7 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
                 totBin = totBin + hF2[i]->GetBinContent(j+1, k+1);
             if(totBin == 0) continue;
             hGauss = new TH1F("hGauss", "hGauss", f2Bins, f2Min, f2Max);
-            fGauss = new TF1("fGauss", "gaus(0)", 0.95, 1.05);
+            fGauss = new TF1("fGauss", "gaus", 0.95, 1.05);
             for(Int_t k = 0; k < f2Bins; k++){
                 binContent = hF2[i]->GetBinContent(j+1, k+1);
                 entriesGaus = entriesGaus + binContent;
@@ -146,7 +146,11 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
                     hGauss->Fill(hF2[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            if(entriesGaus < 25) continue;
+            if(entriesGaus < 25){
+                delete hGauss;
+                delete fGauss;
+                continue;
+            }
             hGauss->Fit("fGauss", "EQR");
             if(printGFit){
                 c1->cd();
@@ -424,7 +428,7 @@ void FitPCorr::writeHists(TFile *f)
         hF1Mean[i]->Delete();
         hF2Mean[i]->Delete();
         for(Int_t j = 0; j < 4; j++){
-            hF1Extra[i]->Delete();
+            hF1Extra[i][j]->Delete();
         }
     }
     f->Close();
