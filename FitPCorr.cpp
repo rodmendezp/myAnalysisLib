@@ -62,7 +62,7 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
         if(nRowsEVNT > 1 && isInitElec()){
-            if(minThteaE > fId->ThetaLab(0)) minThetaE = fId->ThetaLab(0);
+            if(minThetaE > fId->ThetaLab(0)) minThetaE = fId->ThetaLab(0);
             if(maxThetaE < fId->ThetaLab(0)) maxThetaE = fId->ThetaLab(0);
             if(fId->ThetaLab(0) >= thCut){
                 fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
@@ -158,10 +158,6 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
 
     writeHists(f);
     delete c1;
-}
-
-void FitPCorr::fillThHists()
-{
 }
 
 void FitPCorr::fitHists(Bool_t setInitParams = false, Bool_t tryF2e = false)
@@ -399,7 +395,7 @@ void FitPCorr::initHists(){
     }
 }
 
-void FitPCorr::writeHists(TFile &f)
+void FitPCorr::writeHists(TFile *f)
 {
     f->cd();
     hW->Write();

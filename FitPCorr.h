@@ -79,7 +79,7 @@ private:
     Float_t ratioF1(Float_t p, Float_t theta);
     Float_t pCalc(Float_t theta);
     void initHists();
-    void writeHists(TFile &f);
+    void writeHists(TFile *f);
 };
 
 #endif // FITPCORR_H
