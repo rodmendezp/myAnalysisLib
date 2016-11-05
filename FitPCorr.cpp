@@ -380,7 +380,10 @@ void FitPCorr::initHists(){
     TString sHF2MeanTitle;
     TString sHF1eTitle;
 
-    if(thCut < thMin) thMin = thCut;
+    if(thCut < thMin){
+        thMin = thCut;
+        thBins = (int) (thMax - thBins);
+    }
     for(Int_t i = 0; i < nSect; i++){
         sHF1Title = Form("F1 vs Phi (Sector %d)", i+1);
         sHF2Title = Form("F2 vs Theta (Sector %d)", i+1);
