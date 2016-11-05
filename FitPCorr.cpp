@@ -85,7 +85,7 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
         }
     }
 
-    cout << "Percentage of event pass cuts << " << hW->GetEntries()/nEntries << endl;
+    cout << "Percentage of event pass cuts " << hW->GetEntries()/nEntries << endl;
 
     Int_t binContent;
     Int_t totBin;
@@ -112,7 +112,11 @@ void FitPCorr::fillHists(TString rootfName, Bool_t printGFit = false, Float_t th
                     hGauss->Fill(hF1[i]->GetYaxis()->GetBinCenter(k+1), binContent);
                 }
             }
-            if(entriesGaus < 50) continue;
+            if(entriesGaus < 50){
+                delete hGauss;
+                delete fGauss;
+                continue;
+            }
             hGauss->Fit("fGauss", "EQR");
             if(printGFit){
                 c1->cd();
