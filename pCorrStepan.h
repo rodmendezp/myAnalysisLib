@@ -31,11 +31,16 @@ class pCorrStepan
 public:
     pCorrStepan(string txtfName);
     ~pCorrStepan();
-    void pCorrFile(string rootfName);
+    void loadF2eParams(string txtfName);
+    void pCorrFile(string rootfName, Bool_t useF2e);
+    Float_t calcF1(Int_t sect, Float_t phi);
+    Float_t calcF2(Int_t sect, Float_t theta);
+    Float_t calcF2e(Int_t sect, Float_t theta);
 private:
     Int_t nSect;
     Float_t f1Params[6][3];
     Float_t f2Params[6][4];
+    Float_t f2eParams[6][3];
 
     Int_t Last_Evt_Num;
     Int_t Last_Key_Num;
@@ -61,8 +66,6 @@ private:
     void initClones();
     void clearClones();
     void initBranches(TTree *tree);
-    Float_t calcF1(Int_t sect, Float_t phi);
-    Float_t calcF2(Int_t sect, Float_t theta);
 
     TClonesArray *EVNTStore;
     TClonesArray *fgEVNTStore;

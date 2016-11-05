@@ -31,7 +31,21 @@ pCorrStepan::~pCorrStepan(){
 
 }
 
-void pCorrStepan::pCorrFile(string rootfName){
+void pCorrStepan::loadF2eParams(string txtfName){
+    ifstream txtFile;
+    if(!fexists(txtfName)){
+        cout << "File " << txtfName << " does not exists" << endl;
+    }
+    txtFile.open(txtfName.c_str());
+    for(Int_t i = 0; i < nSect; i++){
+        for(Int_t j = 0; j < 3; j++){
+            txtFile >> f2eParams[i][j];
+        }
+    }
+    txtFile.close();
+}
+
+void pCorrStepan::pCorrFile(string rootfName, Bool_t useF2e = false){
     Int_t comp = __COMPRESS__;
     Int_t nEntries;
     Int_t sect;
@@ -91,7 +105,10 @@ void pCorrStepan::pCorrFile(string rootfName){
             fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", j);
             nfEVNT = new TEVNTClass(fEVNT);
             sect = fID->Sector(j);
-            nMom = fID->Momentum(j)*calcF1(sect, fID->PhiLab(j))*calcF2(sect, fID->ThetaLab(j));
+            if(useF2e == false)
+                nMom = fID->Momentum(j)*calcF1(sect, fID->PhiLab(j))*calcF2(sect, fID->ThetaLab(j));
+            else
+                nMom = fID->Momentum(j)*calcF1(sect, fID->PhiLab(j))*calcF2e(sect, fID->ThetaLab(j));
             cout << "Phi = " << fID->PhiLab(j) << " Theta = " << fID->ThetaLab(j) << endl;
             cout << "Old Momentum = " << fID->Momentum(j) << " New Momentum " << nMom << endl;
             cout << "Ratio = " << nMom/fID->Momentum(j) << endl;
@@ -223,5 +240,12 @@ Float_t pCorrStepan::calcF2(Int_t sect, Float_t theta)
 {
     Float_t f2;
     f2 = f2Params[sect][0]+(f2Params[sect][1]+f2Params[sect][2]*theta+f2Params[sect][3]*theta*theta)*TMath::Exp(theta);
+    return f2;
+}
+
+Float_t pCorrStepan::calcF2e(Int_t sect, Float_t theta)
+{
+    Float_t f2;
+    f2 = f2eParams[sect][0]*TMath::Power(theta, f2eParams[sect][1]) + f2eParams[sect][3];
     return f2;
 }
