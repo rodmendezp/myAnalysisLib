@@ -38,4 +38,5 @@ libmyROOTLib.so: $(OBJECTS)
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -shared -o $@ $^
 
 clean:
-                @rm -rf pCorrStepan.o FitPCorr.o myROOTUtils.o libmyROOTLib.so
+		@rm -rf pCorrStepan.o FitPCorr.o myROOTUtils.o libmyROOTLib.so
+
