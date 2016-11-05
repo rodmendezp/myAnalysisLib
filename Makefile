@@ -28,7 +28,7 @@ all: libmyROOTLib.so
 myROOTUtils.o: myROOTUtils.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@	
 
-fitPCorrStepan.o: fitPCorrStepan.cpp
+FitPCorr.o: FitPCorr.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 		
 pCorrStepan.o: pCorrStepan.cpp
@@ -38,4 +38,4 @@ libmyROOTLib.so: $(OBJECTS)
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -shared -o $@ $^
 
 clean:
-		@rm -rf pCorrStepan.o fitPCorrStepan.o myROOTUtils.o libmyROOTLib.so
+                @rm -rf pCorrStepan.o FitPCorr.o myROOTUtils.o libmyROOTLib.so
