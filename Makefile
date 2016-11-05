@@ -19,7 +19,7 @@ LDFLAGS   = -O2 $(ROOTLDFLAGS)
 INCLUDES  := -I/$(ROOTINCDIR) -I$(CLASTOOL)/include -I$(ANALYSER)/include -I/.
 LIBS      := $(ROOTLIBS) -L$(CLASTOOL)/slib/Linux -lClasTool -L$(ANALYSER)/slib -lTIdentificator
 
-SOURCES := myROOTUtils.cpp fitPCorrStepan.cpp pCorrStepan.cpp
+SOURCES := myROOTUtils.cpp FitPCorr.cpp pCorrStepan.cpp
 OBJECTS := $(SOURCES:.cpp=.o)
 
 ##############################################################################
