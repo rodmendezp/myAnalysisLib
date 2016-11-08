@@ -17,6 +17,6 @@
 using namespace std;
 
 Bool_t fexists(string fName);
-void drawNicePlot(string title, string xLabel, string yLabel, Bool_t drawLegend, TH1F *h);
+void drawNicePlot(TH1 *h, TString fName, TString title, TString xLabel, TString yLabel, Bool_t drawLegend);
 
 #endif // MYROOTUTILS_H
