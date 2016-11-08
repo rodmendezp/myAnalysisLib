@@ -31,6 +31,8 @@ FitPCorr::FitPCorr(Float_t eBeam, TClasTool *ct)
     f1Max = 1.05;
     f2Min = 0.95;
     f2Max = 1.05;
+    nInitEl = 0;
+    nInitElnoFid = 0;
 
     this->fCT = ct;
     this->eBeam = eBeam;
@@ -96,6 +98,11 @@ void FitPCorr::fillF1(TString rootfName, Bool_t printGFit, Float_t thCut)
         }
     }
 
+    cout << "Finished Filling F1" << endl;
+
+    cout << "InitElec with FidCut = " << nInitEl << endl;
+    cout << "InitElec without FidCut = " << nInitElnoFid << endl;
+
     Int_t binContent;
     Int_t totBin;
     Int_t entriesGaus;
@@ -138,6 +145,8 @@ void FitPCorr::fillF1(TString rootfName, Bool_t printGFit, Float_t thCut)
             delete fGauss;
         }
     }
+
+    cout << "Finished Filling Gaussian F1" << endl;
 
     f->cd();
     hW->Write();
@@ -208,6 +217,8 @@ void FitPCorr::fillF2(Bool_t printGFit){
     Float_t nMom;
     Float_t nW;
 
+    cout << "Started Filling F2" << endl;
+
     for(Int_t i = 0; i < nEntries; i++){
         if(i == 0) fCT->GetEntry(0);
         else fCT->Next();
@@ -235,6 +246,8 @@ void FitPCorr::fillF2(Bool_t printGFit){
             }
         }
     }
+
+    cout << "Finished Filling F2" << endl;
 
     Int_t binContent;
     Int_t totBin;
@@ -278,6 +291,8 @@ void FitPCorr::fillF2(Bool_t printGFit){
             delete fGauss;
         }
     }
+
+    cout << "Finished Filling Gaussian F2" << endl;
 
     f->cd();
     hW->Write();
@@ -644,7 +659,10 @@ Bool_t FitPCorr::isInitElec()
     result = result && fId->StatDC(0) > 0 && fId->StatEC(0) > 0 && fId->DCStatus(0) > 0 && fId->SCStatus(0) == 33 && fId->Nphe(0) > 25;
     result = result && (fId->Etot(0) / 0.27 / 1.15 + 0.4) > fId->Momentum(0) && (fId->Etot(0) / 0.27 / 1.15 - 0.2 < fId->Momentum(0));
     result = result && (fId->Ein(0) + fId->Eout(0) > 0.8 * 0.27 * fId->Momentum(0)) && (fId->Ein(0) + fId->Eout(0) < 1.2 * 0.27 * fId->Momentum(0));
-    result = result && fId->Eout(0) != 0 && fId->FidCheckCut() == 1;
+    result = result && fId->Eout(0) != 0;
+    if(result) nInitElnoFid++;
+    result = result && fId->FidCheckCut() == 1;
+    if(result) nInitEl++;
     return result;
 }
 

@@ -47,6 +47,8 @@ private:
     Int_t thBins;
     Int_t f1Bins;
     Int_t f2Bins;
+    Int_t nInitEl;
+    Int_t nInitElnoFid;
     Float_t eBeam;
     Float_t kMassP;
     Float_t thCut;
