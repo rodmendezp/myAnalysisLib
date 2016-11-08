@@ -20,7 +20,7 @@ class PCorrSimple{
 public:
     PCorrSimple(Float_t eBeam, TClasTool *ct);
     ~PCorrSimple();
-    void mainFun(TString rootfName, Float_t thCut);
+    void mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e);
 private:
     Int_t nEntries;
     Int_t nRowsEVNT;

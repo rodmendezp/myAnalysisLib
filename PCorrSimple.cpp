@@ -27,7 +27,7 @@ PCorrSimple::~PCorrSimple()
     delete fId;
 }
 
-void PCorrSimple::mainFun(TString rootfName, Float_t thCut)
+void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
 {
     Bool_t hasProton;
     this->thCut = thCut;
@@ -58,9 +58,15 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut)
             }
             if(hasProton && fEVNT->GetZ() < -10){
                 sec = fId->Sector(0);
-                hPorc->Fill(f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec));
+                if(!tryF2e)
+                    hPorc->Fill(f1(fId->PhiLab(0), sec)*f2(fId->ThetaLab(0), sec));
+                else
+                    hPorc->Fill(f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec));
                 hPe->Fill(fId->Momentum(0));
-                newP = fId->Momentum(0)*f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec);
+                if(!tryF2e)
+                    newP = fId->Momentum(0)*f1(fId->PhiLab(0), sec)*f2(fId->ThetaLab(0), sec);
+                else
+                    newP = fId->Momentum(0)*f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec);
                 hnewPe->Fill(newP);
                 hW->Fill(newW(newQ2(newP), newNu(newP)));
             }
