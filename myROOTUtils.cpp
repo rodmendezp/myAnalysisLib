@@ -11,7 +11,7 @@ Bool_t fexists(string fName){
         return false;
 }
 
-void drawNicePlot(TH1 *h, TCanvas *ccNP, TString fName, TString title, TString xLabel, TString yLabel, Bool_t drawLegend)
+void drawNicePlot(TH1 *h, TCanvas *ccNP, TString title, TString xLabel, TString yLabel, Bool_t drawLegend)
 {
     ccNP->cd();
     h->SetTitle(title);
@@ -23,8 +23,4 @@ void drawNicePlot(TH1 *h, TCanvas *ccNP, TString fName, TString title, TString x
     grid->Draw();
     grid->cd();
     grid->SetGrid();
-
-    ccNP->SaveAs(fName);
-    delete ccNP;
-    delete grid;
 }
