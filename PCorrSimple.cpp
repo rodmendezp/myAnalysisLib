@@ -38,8 +38,8 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
     TH1F *hW = new TH1F("hW", "", 100, 0.7, 1.2);
     TH1F *hnewPe = new TH1F("hnewPe", "", 500, 0, eBeam);
     TH1F *hPe = new TH1F("hPe", "", 500, 0, eBeam);
-    TH1F *hF1 = new TH1F("hF1", "", 100, 0.9, 1.1);
-    TH1F *hF2 = new TH1F("hF2", "", 100, 0.9, 1.1);
+    TH1F *hF1 = new TH1F("hF1", "", 200, 0.9, 1.1);
+    TH1F *hF2 = new TH1F("hF2", "", 200, 0.9, 1.1);
 
     Int_t sec;
     Float_t perc;

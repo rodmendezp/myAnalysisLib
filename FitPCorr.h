@@ -32,6 +32,10 @@ public:
     ~FitPCorr();
     void fillHists(TString rootfName, Bool_t printGFit, Float_t thCut);
     void fitHists(Bool_t setInitParams, Bool_t tryF2e);
+    void fillF1(TString rootfName, Bool_t printGFit, Float_t thCut);
+    void fitF1();
+    void fillF2(Bool_t printGFit);
+    void fitF2();
     void writeParams(TString txtfName);
     void printPlots();
     void writeHistsBins(TString txtfName);
@@ -78,6 +82,12 @@ private:
     Bool_t isPartProton(Int_t j);
     Float_t ratioF1(Float_t p, Float_t theta);
     Float_t pCalc(Float_t theta);
+    Float_t calcF1(Float_t phi, Int_t s);
+    Float_t calcF2(Float_t th, Int_t s);
+    Float_t newQ2(Float_t p);
+    Float_t newNu(Float_t p);
+    Float_t newW(Float_t q2, Float_t nu);
+
     void initHists();
     void writeHists(TFile *f);
 };
