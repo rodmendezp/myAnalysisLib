@@ -50,13 +50,13 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut)
         fCT->Next();
         nRowsEVNT = fCT->GetNRows("EVNT");
         hasProton = false;
-        if(nRowsEVNT > 1 && isInitElec() && fId->ThetaLab(0) >= thCut && fEVNT->GetZ() < -10 && fId->W() >= 0.8 && fId->W() <= 1.05){
+        if(nRowsEVNT > 1 && isInitElec() && fId->ThetaLab(0) >= thCut  && fId->W() >= 0.8 && fId->W() <= 1.05){
             fEVNT = (TEVNTClass*) fCT->GetBankRow("EVNT", 0);
             for(Int_t j = 0; j < nRowsEVNT; j++){
                 hasProton = isPartProton(j);
                 if(hasProton) break;
             }
-            if(hasProton){
+            if(hasProton && fEVNT->GetZ() < -10){
                 sec = fId->Sector(0);
                 hPorc->Fill(f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec));
                 hPe->Fill(fId->Momentum(0));
