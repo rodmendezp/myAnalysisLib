@@ -19,7 +19,7 @@ LDFLAGS   = -O2 $(ROOTLDFLAGS)
 INCLUDES  := -I/$(ROOTINCDIR) -I$(CLASTOOL)/include -I$(ANALYSER)/include -I/.
 LIBS      := $(ROOTLIBS) -L$(CLASTOOL)/slib/Linux -lClasTool -L$(ANALYSER)/slib -lTIdentificator
 
-SOURCES := myROOTUtils.cpp FitPCorr.cpp pCorrStepan.cpp
+SOURCES := myROOTUtils.cpp FitPCorr.cpp pCorrStepan.cpp PCorrSimple.cpp
 OBJECTS := $(SOURCES:.cpp=.o)
 
 ##############################################################################
@@ -32,6 +32,9 @@ FitPCorr.o: FitPCorr.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 		
 pCorrStepan.o: pCorrStepan.cpp
+		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+PCorrSimple.o: PCorrSimple.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 libmyROOTLib.so: $(OBJECTS)
