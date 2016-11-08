@@ -38,8 +38,11 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
     TH1F *hW = new TH1F("hW", "", 100, 0.7, 1.2);
     TH1F *hnewPe = new TH1F("hnewPe", "", 500, 0, eBeam);
     TH1F *hPe = new TH1F("hPe", "", 500, 0, eBeam);
+    TH1F *hF1 = new TH1F("hF1", "", 100, 0.9, 1.1);
+    TH1F *hF2 = new TH1F("hF2", "", 100, 0.9, 1.1);
 
     Int_t sec;
+    Float_t perc;
     Float_t newP;
 
     LoadParams("fitParams.txt");
@@ -58,15 +61,20 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
             }
             if(hasProton && fEVNT->GetZ() < -10){
                 sec = fId->Sector(0);
-                if(!tryF2e)
-                    hPorc->Fill(f1(fId->PhiLab(0), sec)*f2(fId->ThetaLab(0), sec));
-                else
-                    hPorc->Fill(f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec));
+                hF1->Fill(f1(fId->PhiLab(0), sec));
+                if(tryF2e){
+                    hF2->SetTitle("F2e");
+                    hF2->Fill(f2e(fId->ThetaLab(0), sec));
+                    perc = f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec);
+                }
+                else{
+                    hF2->SetTitle("F2");
+                    hF2->Fill(f2(fId->ThetaLab(0), sec));
+                    perc =f1(fId->PhiLab(0), sec)*f2(fId->ThetaLab(0), sec);
+                }
+                hPorc->Fill(perc);
                 hPe->Fill(fId->Momentum(0));
-                if(!tryF2e)
-                    newP = fId->Momentum(0)*f1(fId->PhiLab(0), sec)*f2(fId->ThetaLab(0), sec);
-                else
-                    newP = fId->Momentum(0)*f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec);
+                newP = fId->Momentum(0)*perc;
                 hnewPe->Fill(newP);
                 hW->Fill(newW(newQ2(newP), newNu(newP)));
             }
@@ -78,6 +86,8 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
     hW->Write();
     hnewPe->Write();
     hPe->Write();
+    hF1->Write();
+    hF2->Write();
 
     hPorc->Delete();
     hW->Delete();
