@@ -10,8 +10,13 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TF1.h"
+#include "TCanvas.h"
+#include "TPad.h"
 #include "TDirectory.h"
 
-Bool_t fexists(std::string fName);
+using namespace std;
+
+Bool_t fexists(string fName);
+void drawNicePlot(string title, string xLabel, string yLabel, Bool_t drawLegend, TH1F *h);
 
 #endif // MYROOTUTILS_H

@@ -10,3 +10,21 @@ Bool_t fexists(string fName){
     else
         return false;
 }
+
+void drawNicePlot(TH1 *h, string fName, string title, string xLabel, string yLabel, Bool_t drawLegend)
+{
+    TCanvas *ccNP = new TCanvas("ccNP", "ccNP", 1600, 900);
+    h->SetTitle(title);
+    h->GetXaxis()->SetTitle(xLabel);
+    h->GetYaxis()->SetTitle(yLabel);
+    h->Draw();
+
+    TPad *grid = new TPad("grid","",0,0,1,1);
+    grid->Draw();
+    grid->cd();
+    grid->SetGrid();
+
+    ccNP->SaveAs(fName);
+    delete ccNP;
+    delete grid;
+}
