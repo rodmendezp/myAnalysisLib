@@ -11,9 +11,9 @@ Bool_t fexists(string fName){
         return false;
 }
 
-void drawNicePlot(TH1 *h, TString fName, TString title, TString xLabel, TString yLabel, Bool_t drawLegend)
+void drawNicePlot(TH1 *h, TCanvas *ccNP, TString fName, TString title, TString xLabel, TString yLabel, Bool_t drawLegend)
 {
-    TCanvas *ccNP = new TCanvas("ccNP", "ccNP", 1600, 900);
+    ccNP->cd();
     h->SetTitle(title);
     h->GetXaxis()->SetTitle(xLabel);
     h->GetYaxis()->SetTitle(yLabel);
