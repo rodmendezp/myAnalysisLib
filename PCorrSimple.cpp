@@ -130,7 +130,7 @@ Float_t PCorrSimple::f1(Float_t phi, Int_t s)
 
 Float_t PCorrSimple::f2(Float_t th, Int_t s)
 {
-    return f2Params[s][0]+(f2Params[s][1]+f2Params[s][1]*th+f2Params[s][2]*th*th)*TMath::Exp(-th);
+    return f2Params[s][0]+(f2Params[s][1]+f2Params[s][2]*th+f2Params[s][3]*th*th)*TMath::Exp(-th);
 }
 
 Float_t PCorrSimple::f2e(Float_t th, Int_t s)
