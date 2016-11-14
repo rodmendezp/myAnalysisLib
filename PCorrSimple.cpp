@@ -46,7 +46,6 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
     Float_t newP;
 
     LoadParams("fitParams.txt");
-    LoadParamsE("fitPower2Params.txt");
 
     cout << "Number of Events: " << nEntries << endl;
     for(Int_t i = 0; i < nEntries; i++){
@@ -61,9 +60,9 @@ void PCorrSimple::mainFun(TString rootfName, Float_t thCut, Bool_t tryF2e)
             }
             if(hasProton && fEVNT->GetZ() < -10){
                 sec = fId->Sector(0);
+                if(sec == 4) continue;
                 hF1->Fill(f1(fId->PhiLab(0), sec));
                 if(tryF2e){
-                    hF2->SetTitle("F2e");
                     hF2->Fill(f2e(fId->ThetaLab(0), sec));
                     perc = f1(fId->PhiLab(0), sec)*f2e(fId->ThetaLab(0), sec);
                 }
