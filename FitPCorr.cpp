@@ -247,8 +247,6 @@ void FitPCorr::fillF2(Bool_t printGFit){
         }
     }
 
-    cout << "Finished Filling F2" << endl;
-
     Int_t binContent;
     Int_t totBin;
     Int_t entriesGaus;
@@ -291,8 +289,6 @@ void FitPCorr::fillF2(Bool_t printGFit){
             delete fGauss;
         }
     }
-
-    cout << "Finished Filling Gaussian F2" << endl;
 
     f->cd();
     hW->Write();
@@ -341,6 +337,29 @@ void FitPCorr::fitF2(){
     }
     hF2r->Delete();
 
+    f->Close();
+    delete f;
+
+    return;
+}
+
+void FitPCorr::fitF2e()
+{
+    TFile *f = new TFile(rootfName, "UPDATE");
+    TH1F *hF2r;
+    TF1 *f2e[nSect];
+    for(Int_t i = 0; i < nSect; i++){
+        f2e[i] = new TF1(Form("f2e_phi%d", i+1), "[0]*x**[1]+[2]", thMin, thMax);
+        hF2r = (TH1F*) f->Get(Form("hF2_phi%d_m", i+1));
+        f->cd();
+        hF2r->Fit(Form("f2e_phi%d", i+1), "REQ");
+        f->cd();
+        hF2r->Write(Form("%s_eFIT", hF2r->GetName()));
+        f2eParams[i][0] = f2e[i]->GetParameter(0);
+        f2eParams[i][1] = f2e[i]->GetParameter(1);
+        f2eParams[i][2] = f2e[i]->GetParameter(2);
+        f2e[i]->Delete();
+    }
     f->Close();
     delete f;
 
