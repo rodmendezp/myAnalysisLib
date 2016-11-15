@@ -36,6 +36,7 @@ public:
     void fitF1();
     void fillF2(Bool_t printGFit);
     void fitF2();
+    void fitF2e();
     void writeParams(TString txtfName);
     void printPlots();
     void writeHistsBins(TString txtfName);
