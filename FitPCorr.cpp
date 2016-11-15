@@ -345,11 +345,25 @@ void FitPCorr::fitF2(){
 
 void FitPCorr::fitF2e()
 {
+    // This function need the initial parameters to be set
+    if(fexists("fitPower2Params.txt")){
+        ifstream txtFile;
+        TString aux;
+        txtFile.open("fitPower2Params.txt");
+        for(Int_t i = 0; i < nSect; i++){
+            txtFile >> f2eParams[i][0] >> f2eParams[i][1] >> f2eParams[i][2];
+        }
+        txtFile.close();
+    }
+
     TFile *f = new TFile(rootfName, "UPDATE");
     TH1F *hF2r;
     TF1 *f2e[nSect];
     for(Int_t i = 0; i < nSect; i++){
         f2e[i] = new TF1(Form("f2e_phi%d", i+1), "[0]*x**[1]+[2]", thMin, thMax);
+        for(Int_t j = 0; j < 3; j++){
+            f2e[i]->SetParameter(j, f2eParams[i][j]);
+        }
         hF2r = (TH1F*) f->Get(Form("hF2_phi%d_m", i+1));
         f->cd();
         hF2r->Fit(Form("f2e_phi%d", i+1), "REQ");
